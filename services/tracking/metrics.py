@@ -27,7 +27,7 @@ def sync_metrics_update(context):
 
     last_voice = st.session_state.get("last_voice_feedback", 0)
 
-    if now - last_voice > 5:
+    if now - last_voice > 8:
         if st.session_state.get("voice_pipeline"):
             result = st.session_state.voice_pipeline.process_event(
                 event="form_check",
@@ -139,17 +139,6 @@ def sync_metrics_update(context):
     
         if result:
             st.session_state.audio_to_play, st.session_state.coach_feedback = result
-
-    if st.session_state.get("voice_pipeline"):
-        result = st.session_state.voice_pipeline.process_event(
-            event="form_check",
-            exercise=exercise,
-            metrics=latest_metrics,
-        )
-        
-        if result:
-            st.session_state.audio_to_play, st.session_state.coach_feedback = result
-
 
 
 
