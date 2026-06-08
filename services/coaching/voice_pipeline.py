@@ -75,8 +75,10 @@ class VoicePipeline:
         is_major_issue = event in ["workout_started", "set_completed", "workout_completed", "no_pose_detected", "form_check", "rep_completed"]
 
         if not is_major_issue:
+            if not issue:
+                return None
             
-            if now - self.last_spoken_at < 8:
+            if now - self.last_spoken_at < 15:
                 return None
             
             if not issue:
