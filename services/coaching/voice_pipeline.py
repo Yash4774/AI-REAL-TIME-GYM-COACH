@@ -97,12 +97,15 @@ class VoicePipeline:
         self.last_spoken_at = now
         self.next_voice_at = now + self._estimate_speech_seconds(text)
 
+        if voice:
+            st.session_state.voice_pause_until = self.next_voice_at
+
 
         return voice, text
 
     def _estimate_speech_seconds(self, text):
         words = len((text or "").split())
-        return max(5, min(14, 1.5 + words * 0.45))
+        return max(8, min(22, 3 + words * 0.65))
     
 
 def autoplay_audio(audio_bytes):

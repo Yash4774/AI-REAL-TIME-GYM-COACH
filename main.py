@@ -34,6 +34,10 @@ from services.persistence.exercise_repository import get_users_exercises, add_ex
 from services.coaching.llm import LLMCoach
 from services.coaching.tts import TextToSpeech
 from services.coaching.voice_pipeline import VoicePipeline, autoplay_audio
+try:
+    from streamlit_autorefresh import st_autorefresh
+except ImportError:
+    st_autorefresh = None
 
 
 DEFAULT_RTC_CONFIGURATION = {
@@ -112,6 +116,20 @@ def get_rtc_configuration():
     st.session_state.rtc_configuration = DEFAULT_RTC_CONFIGURATION
     return DEFAULT_RTC_CONFIGURATION
 
+
+def refresh_metrics_safely(context):
+    if not context or not getattr(context, "state", None) or not context.state.playing:
+        return
+
+    pause_until = st.session_state.get("voice_pause_until", 0)
+
+    if time.time() < pause_until:
+        return
+
+    if st_autorefresh:
+        st_autorefresh(interval=2000, key="workout_metrics_refresh")
+    else:
+        st.session_state.webrtc_config_error = "Install streamlit-autorefresh so live metrics can update on Streamlit Cloud."
 
 
 def main():
@@ -341,6 +359,7 @@ def main():
         )
 
         sync_metrics_update(context)
+        refresh_metrics_safely(context)
 
         inject_webrtc_styles()
 
