@@ -1,4 +1,5 @@
 import streamlit as st
+import json
 import time 
 import os
 import pandas as pd
@@ -33,6 +34,74 @@ from services.persistence.exercise_repository import get_users_exercises, add_ex
 from services.coaching.llm import LLMCoach
 from services.coaching.tts import TextToSpeech
 from services.coaching.voice_pipeline import VoicePipeline, autoplay_audio
+
+
+DEFAULT_RTC_CONFIGURATION = {
+    "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+}
+
+
+def get_secret(name, default=""):
+    try:
+        return st.secrets.get(name, default)
+    except Exception:
+        return default
+
+
+def get_direct_rtc_configuration():
+    config_json = os.environ.get("RTC_CONFIGURATION_JSON", "").strip()
+
+    if not config_json:
+        config_json = str(get_secret("RTC_CONFIGURATION_JSON", "")).strip()
+
+    if config_json:
+        try:
+            return json.loads(config_json)
+        except json.JSONDecodeError as e:
+            st.session_state.webrtc_config_error = f"Invalid RTC_CONFIGURATION_JSON: {e}"
+
+    try:
+        if "rtc_configuration" in st.secrets:
+            return dict(st.secrets["rtc_configuration"])
+    except Exception:
+        pass
+
+    return None
+
+
+def get_twilio_rtc_configuration():
+    account_sid = os.environ.get("TWILIO_ACCOUNT_SID", "").strip() or str(get_secret("TWILIO_ACCOUNT_SID", "")).strip()
+    auth_token = os.environ.get("TWILIO_AUTH_TOKEN", "").strip() or str(get_secret("TWILIO_AUTH_TOKEN", "")).strip()
+
+    if not account_sid or not auth_token:
+        return None
+
+    try:
+        from twilio.rest import Client
+    except ImportError:
+        st.session_state.webrtc_config_error = "Twilio credentials found, but the twilio package is not installed."
+        return None
+
+    try:
+        token = Client(account_sid, auth_token).tokens.create()
+        return {"iceServers": token.ice_servers}
+    except Exception as e:
+        st.session_state.webrtc_config_error = f"Could not load Twilio TURN servers: {e}"
+        return None
+
+
+def get_rtc_configuration():
+    rtc_configuration = get_direct_rtc_configuration()
+
+    if rtc_configuration:
+        return rtc_configuration
+
+    rtc_configuration = get_twilio_rtc_configuration()
+
+    if rtc_configuration:
+        return rtc_configuration
+
+    return DEFAULT_RTC_CONFIGURATION
 
 
 
@@ -227,6 +296,9 @@ def main():
     if st.session_state.get("voice_pipeline_error"):
         st.warning(f"Voice status: {st.session_state.voice_pipeline_error}")
 
+    if st.session_state.get("webrtc_config_error"):
+        st.warning(f"WebRTC status: {st.session_state.webrtc_config_error}")
+
     if not workout_started:
         st.markdown("""
             <div style="
@@ -247,11 +319,13 @@ def main():
             unsafe_allow_html=True,
 )
     else:
+        rtc_configuration = get_rtc_configuration()
+
         context = webrtc_streamer(
             key="exercise-analysis",
             mode=WebRtcMode.SENDRECV,
             video_processor_factory=VideoProcessorClass,
-            rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+            rtc_configuration=rtc_configuration,
             media_stream_constraints={
                 "video": True,
                 "audio": False
