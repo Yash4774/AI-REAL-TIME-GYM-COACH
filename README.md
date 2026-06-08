@@ -1,120 +1,189 @@
 # 🏋️ AI Real-Time Gym Coach V2
 
 <p align="center">
+  <a href="https://ai-realtime-gym-assist.netlify.app/">
+    <img src="https://img.shields.io/badge/🌐_Live_Documentation-Visit_Now-success?style=for-the-badge" />
+  </a>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
   <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" />
   <img src="https://img.shields.io/badge/MediaPipe-00BFA5?style=for-the-badge&logo=google&logoColor=white" />
   <img src="https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white" />
   <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" />
   <img src="https://img.shields.io/badge/WebRTC-333333?style=for-the-badge&logo=webrtc&logoColor=white" />
+  <img src="https://img.shields.io/badge/Groq-000000?style=for-the-badge&logo=groq&logoColor=white" />
 </p>
 
 <p align="center">
-  <b>AI-Powered Real-Time Fitness Coaching using Computer Vision, Pose Detection, and Voice Feedback</b>
+  <h3 align="center">🤖 AI-Powered Real-Time Fitness Coach</h3>
+  <p align="center">
+    Intelligent exercise tracking, pose analysis, voice coaching, and workout monitoring using Computer Vision and AI.
+  </p>
 </p>
+
+---
+
+## 🌐 Documentation & Project Website
+
+### https://ai-realtime-gym-assist.netlify.app/
+
+Explore the complete project documentation, features, architecture, workflow, and implementation details.
 
 ---
 
 ## 🚀 Overview
 
-AI Real-Time Gym Coach V2 is a smart fitness assistant that analyzes exercises in real time using MediaPipe Pose Detection and Computer Vision.
+AI Real-Time Gym Coach V2 is an intelligent fitness assistant that leverages **Computer Vision**, **MediaPipe Pose Detection**, **Artificial Intelligence**, and **Voice Coaching** to provide real-time exercise guidance.
 
-The system tracks body movements, counts repetitions, evaluates exercise form, provides AI-generated coaching feedback, and delivers real-time voice guidance while users perform workouts.
-
----
-
-## ✨ Features
-
-- 🎯 Real-Time Pose Detection
-- 🤖 AI Fitness Coach
-- 🎙️ Voice Feedback System
-- 🔢 Automatic Rep Counting
-- 📊 Set & Workout Tracking
-- 🏋️ Multiple Exercise Support
-- 📈 Performance Analytics
-- 💾 SQLite Database Storage
-- 📷 Live Webcam Processing
-- ⚡ Form Correction Feedback
-- 🌐 Streamlit Cloud Deployment
+The system analyzes body posture through a webcam, counts repetitions automatically, evaluates exercise form, tracks workout performance, and delivers live AI-generated coaching feedback.
 
 ---
 
-## 🧠 Technologies Used
+## ✨ Key Features
 
-| Technology | Purpose |
-|------------|---------|
-| Python | Core Application |
-| Streamlit | Frontend & Dashboard |
-| MediaPipe | Human Pose Detection |
-| OpenCV | Video Processing |
-| SQLite | Workout Data Storage |
-| WebRTC | Real-Time Camera Streaming |
-| gTTS | Text-To-Speech |
-| Groq LLM | AI Coaching Feedback |
+### 🎯 Real-Time Pose Detection
+Track body landmarks and joint movements using MediaPipe.
+
+### 🔢 Automatic Rep Counting
+Accurately count repetitions without manual input.
+
+### 📊 Smart Workout Tracking
+Monitor reps, sets, workout duration, and exercise progress.
+
+### 🎙️ AI Voice Coach
+Receive real-time spoken feedback and exercise guidance.
+
+### 🤖 LLM-Powered Coaching
+Generate contextual coaching and motivation using AI.
+
+### ⚡ Form Correction
+Detect incorrect posture and provide corrective feedback.
+
+### 📷 Live Webcam Analysis
+Analyze body movements directly from the webcam feed.
+
+### 💾 Workout History Storage
+Store workout data using SQLite.
+
+### 🌐 Streamlit Deployment
+Accessible from anywhere through a browser.
+
+---
+
+## 🧠 Tech Stack
+
+| Category | Technologies |
+|-----------|-------------|
+| Programming Language | Python |
+| Frontend | Streamlit |
+| Computer Vision | OpenCV |
+| Pose Detection | MediaPipe |
+| Database | SQLite |
+| Real-Time Streaming | WebRTC |
+| AI Coaching | Groq LLM |
+| Text-to-Speech | gTTS |
+| Deployment | Streamlit Cloud |
 
 ---
 
 ## 🏗️ System Architecture
 
+```text
+User
+ │
+ ▼
+Webcam Stream
+ │
+ ▼
+MediaPipe Pose Detection
+ │
+ ▼
+Exercise Analysis Engine
+ │
+ ├── Rep Counting
+ ├── Form Detection
+ ├── Angle Calculation
+ ├── Metrics Tracking
+ │
+ ▼
+AI Coach Engine
+ │
+ ├── Groq LLM
+ ├── Voice Feedback
+ └── Motivation System
+ │
+ ▼
+Streamlit Dashboard
+ │
+ ▼
+SQLite Database
+```
 
 ---
 
-## 🎯 Supported Exercises
+## 🏋️ Supported Exercises
 
 ### Upper Body
+
 - Shoulder Press
 - Push-Ups
 - Biceps Curls
 
 ### Lower Body
+
 - Squats
 - Lunges
 
 ---
 
-## 📊 Real-Time Metrics
+## 📊 Performance Metrics
 
-The coach tracks:
+The system continuously tracks:
 
 - Total Repetitions
-- Current Set Progress
+- Current Set Reps
 - Sets Completed
-- Elbow Angle
-- Knee Angle
-- Hip Angle
+- Elbow Angles
+- Knee Angles
+- Hip Angles
 - Back Alignment
-- Exercise Form
+- Exercise Form Quality
 - Workout Duration
+- Posture Accuracy
 
 ---
 
-## 🎙️ AI Voice Coaching
+## 🎙️ AI Coaching Capabilities
 
 The AI Coach can:
 
-- Welcome Users
-- Correct Form Mistakes
-- Give Live Feedback
-- Announce Set Completion
-- Announce Workout Completion
-- Detect Missing Pose
-- Motivate During Training
+- Welcome users at workout start
+- Correct exercise form
+- Detect posture mistakes
+- Motivate users during workouts
+- Announce set completion
+- Announce workout completion
+- Detect missing body pose
+- Provide contextual coaching feedback
 
 ---
 
-## 💾 Database
+## 💾 Database Features
 
-SQLite stores:
+SQLite is used to store:
 
 - Workout Sessions
-- Exercise History
+- Exercise Records
 - Rep Counts
 - Set Statistics
-- User Performance Records
+- User Progress Data
+- Workout History
 
 ---
 
-## 📂 Project Structure
+## 📁 Project Structure
 
 ```bash
 AI-REALTIME-GYM-COACH-V2/
@@ -122,67 +191,85 @@ AI-REALTIME-GYM-COACH-V2/
 ├── services/
 │   ├── coaching/
 │   ├── tracking/
-│   ├── vision/
 │   ├── persistence/
-│   └── auth/
+│   ├── auth/
+│   └── config/
 │
-├── state/
+├── vision/
 ├── ui/
+├── state/
 ├── static/
 │
 ├── main.py
 ├── requirements.txt
 ├── runtime.txt
-└── README.md
+├── README.md
+│
+└── database/
 ```
 
 ---
 
+## ⚙️ Installation
 
+### Clone Repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/AI-REALTIME-GYM-COACH-V2.git
+cd AI-REALTIME-GYM-COACH-V2
+```
+
+### Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Run Locally
+
+```bash
+streamlit run main.py
 ```
 
 ---
 
-## 🌐 Live Demo & Documentation👇:
+## 🔥 Highlights
 
-
-https://ai-realtime-gym-assist.netlify.app/
-
-
----
-
-## 📸 Core Components
-
-### MediaPipe Pose Detection
-Tracks body landmarks in real time for exercise analysis.
-
-### OpenCV Processing
-Handles frame processing and visual overlays.
-
-### AI Coaching Engine
-Generates intelligent exercise feedback using LLMs.
-
-### Voice Guidance System
-Converts coaching feedback into speech using gTTS.
-
-### SQLite Database
-Stores workout performance and session history.
+- Real-Time Exercise Tracking
+- AI Fitness Coach
+- Live Voice Guidance
+- Automatic Rep Counting
+- Pose-Based Form Analysis
+- MediaPipe Integration
+- OpenCV Processing
+- SQLite Storage
+- Streamlit Interface
+- Groq LLM Coaching
 
 ---
+
 ## 👨‍💻 Developer
 
-**Yash Kumar**
+### Yash Kumar
 
-AI • Computer Vision • Fitness Technology
+**AI • Computer Vision • Fitness Technology**
+
+Building intelligent systems that combine AI, Human Motion Analysis, and Real-Time Feedback.
 
 ---
 
-## ⭐ Support
+## ⭐ Support The Project
 
-If you found this project useful, consider giving it a ⭐ on GitHub.
+If you found this project useful:
+
+⭐ Star the repository
+
+🍴 Fork the project
+
+🚀 Share it with others
 
 ---
 
 ## 📜 License
 
-This project is intended for educational and research purposes.
+This project is developed for educational, research, and learning purposes.
