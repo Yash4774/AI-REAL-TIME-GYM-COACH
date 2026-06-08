@@ -250,7 +250,7 @@ streamlit run main.py
 
 ## 👨‍💻 Developer
 
-### Yash Kumar
+### Yash Srivastava 
 
 **AI • Computer Vision • Fitness Technology**
 
