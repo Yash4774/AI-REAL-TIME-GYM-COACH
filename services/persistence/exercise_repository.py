@@ -1,9 +1,8 @@
 import sqlite3
 import streamlit as st
-from pathlib import Path
+import os
 
-_DB_PATH = str(Path(__file__).parent.parent.parent / "data.db")
-
+_DB_PATH = os.path.join("/tmp", "data.db")
 
 @st.cache_resource
 def _get_connection():

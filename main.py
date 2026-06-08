@@ -256,7 +256,7 @@ def main():
                     "video": {
                         "width": {"ideal": 640},
                         "height": {"ideal": 480},
-                        "frameRate": {"ideal": 30},
+                        "frameRate": {"ideal": 20},
                     },
                     "audio": False,
 },
