@@ -8,6 +8,7 @@ class VoicePipeline:
         self.llm = llm
         self.tts = tts
         self.last_spoken_at = 0
+        self.next_voice_at = 0
 
     def _find_form_issue(self, exercise, metrics):
         if "issue" in metrics:
@@ -73,9 +74,13 @@ class VoicePipeline:
         now = time.time()
 
         is_major_issue = event in ["workout_started", "set_completed", "workout_completed", "no_pose_detected", "rep_completed"]
+        can_interrupt = event in ["workout_started", "workout_completed"]
+
+        if now < self.next_voice_at and not can_interrupt:
+            return None
 
         if not is_major_issue:
-            if now - self.last_spoken_at < 8:
+            if now - self.last_spoken_at < 12:
                 return None
             
             if not issue:
@@ -90,9 +95,14 @@ class VoicePipeline:
             st.session_state.voice_pipeline_error = f"Audio generation failed: {e}"
 
         self.last_spoken_at = now
+        self.next_voice_at = now + self._estimate_speech_seconds(text)
 
 
         return voice, text
+
+    def _estimate_speech_seconds(self, text):
+        words = len((text or "").split())
+        return max(5, min(14, 1.5 + words * 0.45))
     
 
 def autoplay_audio(audio_bytes):

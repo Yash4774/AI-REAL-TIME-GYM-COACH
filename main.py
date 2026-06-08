@@ -84,23 +84,32 @@ def get_twilio_rtc_configuration():
 
     try:
         token = Client(account_sid, auth_token).tokens.create()
-        return {"iceServers": token.ice_servers}
+        return {
+            "iceServers": token.ice_servers,
+            "iceTransportPolicy": "relay",
+        }
     except Exception as e:
         st.session_state.webrtc_config_error = f"Could not load Twilio TURN servers: {e}"
         return None
 
 
 def get_rtc_configuration():
+    if "rtc_configuration" in st.session_state:
+        return st.session_state.rtc_configuration
+
     rtc_configuration = get_direct_rtc_configuration()
 
     if rtc_configuration:
+        st.session_state.rtc_configuration = rtc_configuration
         return rtc_configuration
 
     rtc_configuration = get_twilio_rtc_configuration()
 
     if rtc_configuration:
+        st.session_state.rtc_configuration = rtc_configuration
         return rtc_configuration
 
+    st.session_state.rtc_configuration = DEFAULT_RTC_CONFIGURATION
     return DEFAULT_RTC_CONFIGURATION
 
 
@@ -182,18 +191,13 @@ def main():
                      st.session_state.last_saved_sets_completed = 0
                      st.session_state.last_notified_workout_completed = False
                      st.session_state.last_notified_sets_completed = 0
+                     st.session_state.pending_voice_event = {
+                         "event": "workout_started",
+                         "exercise": plan_exercise,
+                         "metrics": {},
+                     }
 
-                     if st.session_state.voice_pipeline:
-                        result = st.session_state.voice_pipeline.process_event(
-                            event="workout_started",
-                            exercise=plan_exercise,
-                            metrics={}
-                        )
-
-                    
-
-                        if result:
-                            st.session_state.audio_to_play, st.session_state.coach_feedback = result
+                     st.rerun()
 
 
             else:
@@ -206,8 +210,6 @@ def main():
                 end_session_button = st.button("End Workout!", key="end_session_button", width="stretch")
 
                 if end_session_button:
-                    st.session_state.workout_started = False
-
                     if st.session_state.voice_pipeline:
                         result = st.session_state.voice_pipeline.process_event(
                             event="workout_completed",
@@ -216,9 +218,6 @@ def main():
                         )
                         if result:
                             st.session_state.audio_to_play, st.session_state.coach_feedback = result
-
-                    st.rerun()
-                if end_session_button:
 
                     add_exercise(
                         st.session_state.user_id,
@@ -229,7 +228,7 @@ def main():
                     )
 
                     st.session_state.workout_started = False
-                    # st.rerun()
+                    st.rerun()
 
                 
 
@@ -285,6 +284,14 @@ def main():
     st.title("AI Real-Time GYM Coach")
     st.markdown("### Real-time pose detection with protective AI voice coaching")
 
+    pending_voice_event = st.session_state.pop("pending_voice_event", None)
+
+    if pending_voice_event and st.session_state.get("voice_pipeline"):
+        result = st.session_state.voice_pipeline.process_event(**pending_voice_event)
+
+        if result:
+            st.session_state.audio_to_play, st.session_state.coach_feedback = result
+
     if st.session_state.get("audio_to_play"):
         autoplay_audio(st.session_state.audio_to_play)
         st.session_state.audio_to_play = None
@@ -334,10 +341,6 @@ def main():
         )
 
         sync_metrics_update(context)
-
-        if context.state.playing:
-            time.sleep(0.25)
-            st.rerun()
 
         inject_webrtc_styles()
 

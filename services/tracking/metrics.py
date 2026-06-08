@@ -56,6 +56,8 @@ def sync_metrics_update(context):
             if result:
                 st.session_state.audio_to_play, st.session_state.coach_feedback = result
 
+            st.session_state.last_motivation_rep = current_reps
+
     st.session_state.reps = reps
 
     fields = METRICS_FIELDS.get(exercise)
@@ -110,7 +112,6 @@ def sync_metrics_update(context):
 
             if result:
                 st.session_state.audio_to_play, st.session_state.coach_feedback = result
-                st.session_state.audio_to_play = None
 
         st.session_state.set_cycle_started_at = now_ts
         st.session_state.last_saved_sets_completed = sets_completed
