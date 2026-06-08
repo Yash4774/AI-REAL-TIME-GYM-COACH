@@ -2,7 +2,8 @@ import sqlite3
 import streamlit as st
 import os
 
-_DB_PATH = os.path.join("/tmp", "data.db")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_DB_PATH = os.path.join(BASE_DIR, "data.db")
 
 @st.cache_resource
 def _get_connection():
