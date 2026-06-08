@@ -103,6 +103,7 @@ def main():
                  start_session_button = st.button("Start Workout", width="stretch", key="start_session_button")
 
                  if start_session_button:
+                     
                      st.session_state.exercise_type = plan_exercise
                      st.session_state.target_sets = int(plan_sets)
                      st.session_state.reps_per_set = int(plan_reps)
@@ -124,7 +125,6 @@ def main():
 
                         if result:
                             st.session_state.audio_to_play, st.session_state.coach_feedback = result
-                            st.rerun()
 
 
             else:
@@ -218,7 +218,7 @@ def main():
 
     if st.session_state.get("audio_to_play"):
         autoplay_audio(st.session_state.audio_to_play)
-        # st.session_state.audio_to_play = None
+        st.session_state.audio_to_play = None
 
     if st.session_state.get("coach_feedback"):
         st.markdown("")
@@ -268,7 +268,7 @@ def main():
         sync_metrics_update(context)
 
         if context.state.playing:
-            time.sleep(1)
+            time.sleep(2)
             st.rerun()
 
         inject_webrtc_styles()

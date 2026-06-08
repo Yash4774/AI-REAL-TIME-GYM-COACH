@@ -42,7 +42,7 @@ class LLMCoach:
             return issue.replace("The user is", "You are").replace("The user's", "Your")
 
         if event == "workout_started":
-            return "Workout started. Stay strong, control each rep, and keep your form sharp."
+            return "Workout started (Press Start Workout Again!). Stay strong, control each rep, and keep your form sharp."
 
         if event == "set_completed":
             return "Set complete. Great work, breathe steady, and get ready for the next round."

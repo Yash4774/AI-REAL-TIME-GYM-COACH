@@ -41,6 +41,21 @@ def sync_metrics_update(context):
             st.session_state.last_voice_feedback = now
     
     reps = latest_metrics.get("reps")
+
+    current_reps = latest_metrics.get("reps", 0)
+    last_motivation_rep = st.session_state.get("last_motivation_rep", 0)
+
+    if current_reps >= last_motivation_rep + 5:
+        if st.session_state.get("voice_pipeline"):
+            result = st.session_state.voice_pipeline.process_event(
+                event="motivation",
+                exercise=exercise,
+                metrics=latest_metrics,
+            )
+
+            if result:
+                st.session_state.audio_to_play, st.session_state.coach_feedback = result
+
     st.session_state.reps = reps
 
     fields = METRICS_FIELDS.get(exercise)
@@ -127,7 +142,7 @@ def sync_metrics_update(context):
 
     if st.session_state.get("voice_pipeline"):
         result = st.session_state.voice_pipeline.process_event(
-            event="ongoing_form_check",
+            event="form_check",
             exercise=exercise,
             metrics=latest_metrics,
         )
