@@ -128,7 +128,7 @@ def refresh_metrics_safely(context, metrics_updated):
     now = time.time()
     last_refresh = st.session_state.get("last_metrics_ui_refresh", 0)
 
-    if now - last_refresh >= 1.5:
+    if now - last_refresh >= 0.1:
         st.session_state.last_metrics_ui_refresh = now
         time.sleep(0.05)
         st.rerun()
@@ -230,6 +230,8 @@ def main():
                 end_session_button = st.button("End Workout!", key="end_session_button", width="stretch")
 
                 if end_session_button:
+                    st.session_state.workout_started = False
+                    st.rerun()
                     if st.session_state.voice_pipeline:
                         result = st.session_state.voice_pipeline.process_event(
                             event="workout_completed",
@@ -260,7 +262,7 @@ def main():
                 current_set_reps = st.session_state.get("current_set_reps")
                 reps_per_set = st.session_state.get("reps_per_set")
                 sets_completed = st.session_state.get("sets_completed")
-                target_sets = st.session_state.get("plan_sets")
+                target_sets = st.session_state.get("target_sets")
 
 
                 st.subheader("Progress")
@@ -360,19 +362,24 @@ def main():
             async_processing=True
         )
 
-        metrics_updated = sync_metrics_update(context)
-        refresh_metrics_safely(context, metrics_updated)
+        sync_metrics_update(context)
+
+        if context.state.playing:
+            time.sleep(0.25)
+            st.rerun()
+
 
         inject_webrtc_styles()
 
     st.divider()
 
-    st.markdown("#### Workout History")
+    st.markdown("### Workout History")
 
     user_id = st.session_state.get("user_id", 0)
 
     if isinstance(user_id, int):
         history_rows = get_users_exercises(user_id)
+
 
         arr = [
             {
@@ -381,6 +388,8 @@ def main():
                 "Sets": row['sets'],
                 "Time (sec)": row['time'],
                 "Date": row['created_at']
+
+
             }
             for row in history_rows
         ]
@@ -390,16 +399,19 @@ def main():
         if not df.empty:
             df["Date"] = pd.to_datetime(df["Date"]).dt.date
             agg_df = df.groupby(["Exercise", "Date"]).agg({
-                "Reps": 'sum',
+                "Reps": "sum",
                 "Sets": "sum",
-                "Time (sec)": "sum"
+                "Time (sec)": "sum",
+
             }).reset_index()
             agg_df.index += 1
             st.table(agg_df, border="horizontal")
+        
         else:
             st.info("No workout history found.")
 
-
 if __name__ == "__main__":
     main()
+
+       
     
