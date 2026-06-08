@@ -256,7 +256,7 @@ def main():
                     "video": {
                         "width": {"ideal": 640},
                         "height": {"ideal": 480},
-                        "frameRate": {"ideal": 20},
+                        "frameRate": {"ideal": 15},
                     },
                     "audio": False,
 },
@@ -265,7 +265,7 @@ def main():
 
         )
 
-        sync_metrics_update(context)
+        # sync_metrics_update(context)
 
         if context.state.playing:
             time.sleep(0.5)
