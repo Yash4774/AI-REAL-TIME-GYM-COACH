@@ -5,23 +5,23 @@ from services.persistence.exercise_repository import add_exercise
 
 def sync_metrics_update(context):
     if not context or not hasattr(context, "state") or not context.state.playing:
-        return
+        return False
     
     processor = getattr(context, "video_processor", None)
 
     if not processor:
-        return
+        return False
     
     exercise = st.session_state.get("exercise_type")
 
     if not exercise:
-        return
+        return False
     
     processor.set_exercise(exercise)
     latest_metrics = processor.get_latest_metrics()
 
     if not latest_metrics:
-        return
+        return False
     
     now = time.time()
 
@@ -63,7 +63,7 @@ def sync_metrics_update(context):
     fields = METRICS_FIELDS.get(exercise)
 
     if not fields:
-        return
+        return False
 
 
     for key, default in fields.items():
@@ -140,6 +140,8 @@ def sync_metrics_update(context):
     
         if result:
             st.session_state.audio_to_play, st.session_state.coach_feedback = result
+
+    return True
 
 
 

@@ -1,6 +1,7 @@
-import base64
 import time
+import json
 import streamlit as st
+import streamlit.components.v1 as components
 
 
 class VoicePipeline:
@@ -97,8 +98,7 @@ class VoicePipeline:
         self.last_spoken_at = now
         self.next_voice_at = now + self._estimate_speech_seconds(text)
 
-        if voice:
-            st.session_state.voice_pause_until = self.next_voice_at
+        st.session_state.voice_pause_until = self.next_voice_at
 
 
         return voice, text
@@ -108,12 +108,33 @@ class VoicePipeline:
         return max(8, min(22, 3 + words * 0.65))
     
 
-def autoplay_audio(audio_bytes):
-    if not audio_bytes:
+def autoplay_audio(audio_bytes=None, text=None):
+    if not text and not audio_bytes:
         return
-    
-    audio_base64 = base64.b64encode(audio_bytes).decode()
 
+    if text:
+        text_json = json.dumps(text)
+        components.html(
+            f"""
+            <script>
+            (function() {{
+                const text = {text_json};
+                if (!text || !("speechSynthesis" in window)) return;
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = "en-US";
+                utterance.rate = 0.92;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }})();
+            </script>
+            """,
+            height=0,
+        )
+        return
+
+    import base64
+    audio_base64 = base64.b64encode(audio_bytes).decode()
     st.markdown(
         f"""
         <audio autoplay>

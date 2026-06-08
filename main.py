@@ -34,10 +34,6 @@ from services.persistence.exercise_repository import get_users_exercises, add_ex
 from services.coaching.llm import LLMCoach
 from services.coaching.tts import TextToSpeech
 from services.coaching.voice_pipeline import VoicePipeline, autoplay_audio
-try:
-    from streamlit_autorefresh import st_autorefresh
-except ImportError:
-    st_autorefresh = None
 
 
 DEFAULT_RTC_CONFIGURATION = {
@@ -117,8 +113,11 @@ def get_rtc_configuration():
     return DEFAULT_RTC_CONFIGURATION
 
 
-def refresh_metrics_safely(context):
+def refresh_metrics_safely(context, metrics_updated):
     if not context or not getattr(context, "state", None) or not context.state.playing:
+        return
+
+    if not metrics_updated:
         return
 
     pause_until = st.session_state.get("voice_pause_until", 0)
@@ -126,10 +125,13 @@ def refresh_metrics_safely(context):
     if time.time() < pause_until:
         return
 
-    if st_autorefresh:
-        st_autorefresh(interval=2000, key="workout_metrics_refresh")
-    else:
-        st.session_state.webrtc_config_error = "Install streamlit-autorefresh so live metrics can update on Streamlit Cloud."
+    now = time.time()
+    last_refresh = st.session_state.get("last_metrics_ui_refresh", 0)
+
+    if now - last_refresh >= 1.5:
+        st.session_state.last_metrics_ui_refresh = now
+        time.sleep(0.05)
+        st.rerun()
 
 
 def main():
@@ -311,7 +313,7 @@ def main():
             st.session_state.audio_to_play, st.session_state.coach_feedback = result
 
     if st.session_state.get("audio_to_play"):
-        autoplay_audio(st.session_state.audio_to_play)
+        autoplay_audio(st.session_state.audio_to_play, st.session_state.get("coach_feedback"))
         st.session_state.audio_to_play = None
 
     if st.session_state.get("coach_feedback"):
@@ -358,8 +360,8 @@ def main():
             async_processing=True
         )
 
-        sync_metrics_update(context)
-        refresh_metrics_safely(context)
+        metrics_updated = sync_metrics_update(context)
+        refresh_metrics_safely(context, metrics_updated)
 
         inject_webrtc_styles()
 
